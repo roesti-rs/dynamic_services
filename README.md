@@ -1,7 +1,9 @@
 # Dynamic Services
 
 A dynamic service injection framework that provides an Injection style
-programming model implemented as macros.
+programming model implemented as macros with a supporting API. The macros
+are implemented in the
+[dynamic_services_derive](https://crates.io/crates/dynamic_services_derive) create.
 
 Note that this package is still in experimental stage.
 
@@ -9,7 +11,9 @@ Note that this package is still in experimental stage.
 
 Service consumers are activated and injected with the service as the service
 arrives, meaning that the consumer won't exist if the service(s) that it needs
-are not there.
+are not there. Services are dynamic. They can come and go dynamically at runtime.
+Multiple services of the same type could co-exist and services have additional metadata
+(properties) associated with them.
 
 Once the service appears, the consumer will be created and injected with the service.
 
@@ -20,8 +24,8 @@ A very simple consumer using an example TidalService.
 ```
 // Import your service API so you can use it once the instance appears
 use crate::tidal_service::TidalService;
-use dynamic_services::DynamicServices;
-use dynamic_services::{activator, deactivator, dynamic_services};
+use dynamic_services::ServiceReference;
+use dynamic_services_derive::{DynamicServices, dynamic_services};
 
 // Define your consumer struct with at least these derives
 #[derive(DynamicServices, Default)]
@@ -37,14 +41,14 @@ not need to be separately imported as it is handled by the `DynamicServices`
 derive macro.
 
 Provide an impl for your MyConsumer with the `#[dynamic_services]` annotation.
-For now the annotation needs to provide the path to the current impl file,
+For now the annotation needs to provide the path to the current impl file as
+the path attribute,
 e.g. if you would declare `use mypkg::consumer::MyConsumer` then `path` must
 be `mypkg::consumer`.
 
 ```
 #[dynamic_services(path=mypkg::consumer)]
 impl MyConsumer {
-  // Called after the constructor has been called.
   #[activator]
   pub fn activate(&self, ts: &TidalService) {
     println!("MyConsumer Activated... {} - {:?}", ts.next_event(), self.tidal);
@@ -62,7 +66,7 @@ impl MyConsumer {
 }
 ```
 
-The `#[activator]`, `#[deactivator]` and `#[update]` mark callback method
+The `#[activator]`, `#[deactivator]` and `#[update]` mark callback methods
 which are called when the service registration of the dependent service(s)
 change. These are all optional.
 
@@ -74,9 +78,11 @@ are available any more.
 have changed.
 
 ## Example use from main method
-Annotate the main method with `#[dynamic_services_main]`
+Annotate the main method with `#[dynamic_services_main]`.
 
 ```
+use dynamic_services_derive::dynamic_services_main;
+
 #[dynamic_services_main]
 fn main() {
   ...
