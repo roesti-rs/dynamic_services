@@ -24,7 +24,7 @@ use dynamic_services::DynamicServices;
 use dynamic_services::{activator, deactivator, dynamic_services};
 
 // Define your consumer struct with at least these derives
-#[derive(DynamicServices, Debug, Default)]
+#[derive(DynamicServices, Default)]
 pub struct MyConsumer {
   #[inject]
   tidal: Option<ServiceReference<TidalService>>,
