@@ -78,7 +78,8 @@ are available any more.
 have changed.
 
 ## Example use from main method
-Annotate the main method with `#[dynamic_services_main]`.
+Annotate the main method with the `#[dynamic_services_main]` macro. Note that this
+will generate the `register_service()`, `update_service()` and `unregister_service()` methods.
 
 ```
 use dynamic_services_derive::dynamic_services_main;
