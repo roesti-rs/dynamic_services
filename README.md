@@ -60,8 +60,10 @@ impl MyConsumer {
   }
 
   #[update]
-  pub fn update(&self) {
+  pub fn update(&self, field: &str, props: std::collections::BTreeMap<String, String>) {
     println!("MyConsumer Updated.");
+    println!("  updated field: {}", field);
+    println!("  updated properties: {:?}", props);
   }
 }
 ```
@@ -75,7 +77,8 @@ and injected. It also provides a reference to the injected service object(s).
 * The `#[deactivator]` method is called when not all required injected services
 are available any more.
 * The `#[update]` callback is made when the service registration properties
-have changed.
+have changed. The field containing the Service Reference to the updated service
+is passed in along with the updated properties of the service.
 
 ## Example use from main method
 Annotate the main method with the `#[dynamic_services_main]` macro. Note that this
