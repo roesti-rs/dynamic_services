@@ -5,18 +5,20 @@ use std::marker::PhantomData;
 use std::sync::RwLock;
 use uuid::Uuid;
 
-pub static REGD_SERVICES: Lazy<RwLock<HashMap<ServiceRegistration,
-        (Box<dyn Any + Send + Sync>, BTreeMap<String,String>)>>>
+pub type ServiceType = dyn Any + Send + Sync;
+pub type ServiceRegistrationMap = HashMap<ServiceRegistration,
+    (Box<ServiceType>, BTreeMap<String, String>)>;
+
+pub static REGD_SERVICES: Lazy<RwLock<ServiceRegistrationMap>>
     = Lazy::new(||RwLock::new(HashMap::new()));
 
 pub struct ServiceRegistry {
-    // id_counter: Mutex<u32>,
 }
 
 impl ServiceRegistry {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> ServiceRegistry {
         ServiceRegistry {
-            // id_counter: Mutex::new(0),
         }
     }
 }
@@ -27,6 +29,7 @@ pub struct ServiceRegistration {
 }
 
 impl ServiceRegistration {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> ServiceRegistration {
         ServiceRegistration {
             id: Uuid::new_v4(),
@@ -89,6 +92,7 @@ pub struct ConsumerRegistration {
 }
 
 impl ConsumerRegistration {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> ConsumerRegistration {
         ConsumerRegistration {
             id: Uuid::new_v4(),
@@ -103,6 +107,7 @@ pub struct InjectMetadata {
 }
 
 impl InjectMetadata {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> InjectMetadata {
         InjectMetadata {
             fields_injected: 0,
