@@ -36,13 +36,15 @@ impl ServiceRegistration {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ServiceReference<T> {
-    inner: Option<ServiceReferenceInner<T>>
+    inner: Option<ServiceReferenceInner>,
+    _phantom: PhantomData<T>, // To give the generic signature a place
 }
 
 impl<T> Default for ServiceReference<T> {
     fn default() -> Self {
         ServiceReference {
             inner: None,
+            _phantom: PhantomData,
         }
     }
 }
@@ -53,11 +55,13 @@ impl <T>ServiceReference<T> {
             inner: Some(ServiceReferenceInner {
                 id: sr.id,
                 properties,
-                _phantom: PhantomData,
-            })
+            }),
+            _phantom: PhantomData,
         }
     }
 
+    /// Get the properties of the service reference.
+    /// Returns None if the service isn't there.
     pub fn get_properties(&self) -> Option<&BTreeMap<String, String>> {
         if let Some(sr) = &self.inner {
             Some(sr.get_properties())
@@ -68,13 +72,12 @@ impl <T>ServiceReference<T> {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct ServiceReferenceInner<T> {
+pub struct ServiceReferenceInner {
     id: Uuid,
     properties: BTreeMap<String, String>,
-    _phantom: PhantomData<T>, // To give the generic signature a place
 }
 
-impl <T>ServiceReferenceInner<T> {
+impl ServiceReferenceInner {
     pub fn get_properties(&self) -> &BTreeMap<String, String> {
         &self.properties
     }
